@@ -9,5 +9,4 @@ router.delete('/delete/:id',deleteProduct)
 
 router.get('/get-by-name/:name',getByName);
 
-
 export default router;

@@ -6,6 +6,7 @@ import ApiError from "../utils/apiError";
 import httpErrorResponse from "../utils/httpErrorResponse";
 import { getItemsByName, remove, save } from "../services/generic.db";
 import productModel from "../models/product.model";
+import validateId from "../validation/validateId.validator";
 
 export async function insertProduct(req:Request,res:Response,next:NextFunction):Promise<void> {
     
@@ -42,7 +43,9 @@ export async function deleteProduct(req:Request,res:Response,next:NextFunction):
 
         const id:string=req.params.id;
 
-       await remove<Product>(id,productModel);
+        const oId=await validateId(id,productModel);
+
+       await remove<Product>(oId,productModel);
 
        res
         .status(201)

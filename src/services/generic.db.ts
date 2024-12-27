@@ -1,5 +1,4 @@
-import { Document,Model } from "mongoose";
-import validateId from "../validation/validateId.validator";
+import mongoose, { Document,Model } from "mongoose";
 
 export async function save<T extends Document>(item:T,ItemModel:Model<T>):Promise<void> {
     
@@ -18,13 +17,12 @@ try {
 }
 
 
-export async function remove<T extends Document>(id:string,ItemModel:Model<T>):Promise<void> {
+export async function remove<T extends Document>(id:mongoose.Types.ObjectId,ItemModel:Model<T>):Promise<void> {
     
     try {
         
-        const oId=await validateId(id,ItemModel);
 
-           await ItemModel.deleteOne({_id:oId});
+           await ItemModel.deleteOne({_id:id});
         
     
     } catch (error) {
@@ -50,3 +48,17 @@ export async function remove<T extends Document>(id:string,ItemModel:Model<T>):P
         }
         
         }
+
+    export async function updateItemById<T extends Document>(id:mongoose.Types.ObjectId,item:T,ItemModel:Model<T>):Promise<void> {
+    
+            try {
+                
+                
+                await ItemModel.updateOne({_id:id},{$set:item},{ runValidators: true } );
+            
+            } catch (error) {
+                
+                throw error;
+            }
+            
+            }
