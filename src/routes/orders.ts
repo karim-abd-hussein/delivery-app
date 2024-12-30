@@ -13,7 +13,7 @@ router.delete('/cansel/:id',canselOrder);
 
 router.get('/orders',getOrders);
 
-//Admins
+//Store
 router.put('/change-status/:id/:status',changeStatus);
 
 export default router;

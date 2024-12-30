@@ -5,7 +5,7 @@ import ApiError from "../utils/apiError";
 import httpErrorResponse from "../utils/httpErrorResponse";
 import productModel from "../models/product.model";
 
-export async function create(phone:string,address:Address,products:ProductItem[]):Promise<void> {
+export async function insertProducts(products:ProductItem[]):Promise<number> {
     
     try {
         
@@ -37,12 +37,8 @@ export async function create(phone:string,address:Address,products:ProductItem[]
             totalPrice+= productTotalPrice;
          });
 
-
-         const order:Document=new OrderModel({phone,address,products,totalPrice});
-
-         await order.save();
+         return totalPrice;
          
-
     } catch (error) {
         
       throw error;

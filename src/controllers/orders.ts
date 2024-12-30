@@ -1,7 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { Address, Order, Payload, Product, ProductItem } from "../interfaces/base.interfaces";
+import { Address, Order, Payload,ProductItem } from "../interfaces/base.interfaces";
 import { verfiyToken } from "../utils/token";
-import { canselPendingdOrderById, changeOrderStatus, create, deleteCompletedOrderById, getOrdersByPhone } from "../services/orders.db";
+
+import { 
+    canselPendingdOrderById, 
+    changeOrderStatus,
+    deleteCompletedOrderById,
+     getOrdersByPhone, 
+     insertProducts 
+    } 
+from "../services/orders.db";
+
+import orderModel from "../models/order.model";
+import { save } from "../services/generic.db";
 
 export async function createOrder(req:Request,res:Response,next:NextFunction) {
     
@@ -15,7 +26,12 @@ try {
      const address:Address=req.body.address;
      const products:ProductItem[]=req.body.products;
 
-     await create(phone,address,products);
+      const totalPrice:number=await insertProducts(products);
+
+     const newOrder:Order=  new orderModel({phone,address,products,totalPrice});
+
+         
+        await save(newOrder,orderModel);
 
      res
      .status(201)
@@ -94,7 +110,7 @@ export async function deleteOrder(req:Request,res:Response,next:NextFunction) {
         
               await canselPendingdOrderById(orderId);
 
-               await create(phone,address,products);
+            //    await create(phone,address,products);
               
                 res
                 .status(201)
@@ -107,8 +123,6 @@ export async function deleteOrder(req:Request,res:Response,next:NextFunction) {
         }    
         
         }
-
-
 
     export async function getOrders(req:Request,res:Response,next:NextFunction) {
 

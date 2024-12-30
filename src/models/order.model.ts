@@ -34,7 +34,7 @@ const orderSchema:Schema=new mongoose.Schema<Order>({
     totalPrice: { type: Number, required: true },
     status: {
       type: String,
-      enum: ['Pending', 'Completed', 'Cancelled'],
+      enum: ['Pending','Canceled','Accepted', 'Received'],
       default: 'Pending',
     },
     createdAt: { type: Date, default: Date.now },

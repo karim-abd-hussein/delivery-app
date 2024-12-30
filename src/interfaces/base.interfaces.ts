@@ -20,7 +20,7 @@ export interface ProductItem{
 
 }
 
- export interface Order {
+ export interface Order extends Document {
  
    phone:string;
    address:Address;
