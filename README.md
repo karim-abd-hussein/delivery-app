@@ -1,71 +1,100 @@
-# Delivery Application
+# Delivery-Application
 
-This is a backend application for managing a delivery service. The application supports the following entities:
-- **Products**
-- **Stores**
-- **Customers**
-- **Orders**
+## Overview
+The **Delivery-Application** backend is the server-side implementation for a delivery service application. It provides RESTful APIs for managing stores, products, orders, and users, including real-time notifications. Built with Node.js, Express, MongoDB, Mongoose, and Socket.IO, this backend ensures robust performance and scalability.
 
-The application provides a REST API for managing these entities.
+## Features
+- **Super Admin**: Manage stores (create, delete, update, retrieve).
+- **Stores**: Add and manage products.
+- **Customers**: Place and track orders.
+- **Notifications**: Real-time updates using Socket.IO.
+- **Authentication**: Secure login and access control with JWT.
+- **API Documentation**: Integrated Swagger UI for easy API testing and exploration.
 
-## **Table of Contents**
-- [Features](#features)
-- [API Endpoints](#api-endpoints)
-- [Technologies Used](#technologies-used)
-
----
-
-## **Features**
-- Create, read, update, and delete products.
-- Manage stores and their inventory.
-- Customer registration and profile management.
-- Place and manage orders.
-
----
-
-
-## **API Endpoints**
-
-### **Products**
-| Method | Endpoint           | Description              |
-|--------|--------------------|--------------------------|
-| GET    | /api/products      | Get all products         |
-| POST   | /api/products      | Create a new product     |
-| GET    | /api/products/:id  | Get a product by ID      |
-| PUT    | /api/products/:id  | Update a product by ID   |
-| DELETE | /api/products/:id  | Delete a product by ID   |
-
-### **Stores**
-| Method | Endpoint           | Description              |
-|--------|--------------------|--------------------------|
-| GET    | /api/stores        | Get all stores           |
-| POST   | /api/stores        | Create a new store       |
-| GET    | /api/stores/:id    | Get a store by ID        |
-| PUT    | /api/stores/:id    | Update a store by ID     |
-| DELETE | /api/stores/:id    | Delete a store by ID     |
-
-### **Customers**
-| Method | Endpoint             | Description                  |
-|--------|----------------------|------------------------------|
-| POST   | /api/auth/sign-up       | Register a new customer   |
-| POST   | /api/auth/log-in        | Log in                    |
-| POST   | /api/auth/add-profile   | Add customer profile      |
-
-### **Orders**
-| Method | Endpoint           | Description               |
-|--------|--------------------|---------------------------|
-| GET    | /api/orders        | Get all orders            |
-| POST   | /api/orders        | Place a new order         |
-| GET    | /api/orders/:id    | Get an order by ID        |
-| PUT    | /api/orders/:id    | Update an order by ID     |
-| DELETE | /api/orders/:id    | Cancel an order by ID     |
-
----
-
-## **Technologies Used**
-- **Node.js**: Backend runtime environment.
+## Technologies Used
+- **Node.js**: Server-side runtime.
 - **Express.js**: Web framework for building APIs.
-- **MongoDB**: NoSQL database for data storage.
+- **MongoDB**: NoSQL database for flexible and scalable data storage.
 - **Mongoose**: ODM for MongoDB.
-- **dotenv**: For managing environment variables.
+- **Socket.IO**: Real-time communication.
+- **JWT (JSON Web Tokens)**: For secure user authentication.
+- **Swagger**: API documentation and testing.
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/karim-abd-hussein/delivery-app
+   cd delivery-app
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up the environment:
+   - Create an `.env` file in the root directory and configure the following variables:
+     ```env
+    PORT=5000
+   SECRET_KEY=
+    MONGO_URI=
+
+     ```
+
+4. Start the development server:
+   ```bash
+   tsc
+
+   npm start
+   ```
+
+## Endpoints
+
+### Stores 
+| Method | Endpoint                      | Description               |
+|--------|-------------------------------|---------------------------|
+| POST   | /stores /insert               | Create a new store.       |
+| POST   | /stores /log-in               | log in from store.        |
+| GET    | /stores/get-stores            | Retrieve all stores.      |
+| GET    | /stores/get-by-id/:id         | Retrieve a specific store.|
+| GET    | /stores/get-by-name/:name     | Retrieve a specific store.|
+| GET    | /stores/get-by-phone/:phone   | Retrieve a specific store.|
+| PUT    | /stores/update/:id            | Update store details.     |
+| DELETE | /stores/delete/:id            | Delete a store.           |
+
+### Products 
+| Method | Endpoint                     | Description                 |
+|--------|------------------------------|-----------------------------|
+| POST   | /products/insert             | Add a new product.          |
+| GET    | /products/get-products       | Retrieve all products.      |
+| GET    | /products/get-by-id/:id      | Retrieve a specific product.|
+| GET    | /products/get-by-name/:id    | Retrieve a specific product.|
+| PUT  | /products/update/:id           | Update product details.     |
+| DELETE | /products/delete/:id         | Delete a product.           |
+
+### Orders 
+| Method | Endpoint                         | Description               |
+|--------|----------------------------------|---------------------------|
+| POST   | /orders/insert                   | Create a new order.       |
+| DELETE | /orders/delete/:id               | cansel pending order      |
+| GET    | /orders/orders                   | Retrieve all orders.      |
+| GET    | /orders/get-store-orders/:id     | Retrieve a specific order.|
+| PUT    | /orders/change-status/:id/:status| Update order status.      |
+
+### Customers
+| Method | Endpoint        | Description                 |
+|--------|-----------------|-----------------------------|
+| POST   | /auth/add-profile | Add a profile             |
+| POST   | /auth/sgin-up | Register a new user.          |
+| POST   | /auth/log-in    | User login.                 |
+
+
+## Real-Time Notifications
+Socket.IO is used to provide real-time notifications to users. Events include:
+- **Order Updates**: Notify customers when their order status changes.
+- **New Products**: Notify customers about new product additions.
+
+## API Documentation
+Swagger UI is integrated for API testing and documentation. Access it at `http://localhost:5000/api-docs` after starting the server.
+
 

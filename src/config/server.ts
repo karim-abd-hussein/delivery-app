@@ -7,12 +7,14 @@ import handleApiError from '../middlewares/errorHandling.middleware';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import swaggerDocs from './swaggerConfig';
+import cors from './cors';
 
 
 export default function createServer():Express{
 
     const app =express();
 
+    app.use(cors);
     app.use(express.json());
     app.use(cookieParser());
 
