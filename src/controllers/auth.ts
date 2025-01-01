@@ -1,25 +1,25 @@
 import { NextFunction, Request, Response } from "express";
-import { validatePhonePassword } from "../validation/auth.validator";
 import { genToken, verfiyToken } from "../utils/token";
 import { addProfileHandler, logInHandler, signUpHandler } from "../services/auth.db";
-import  { Address,Payload } from "../interfaces/base.interfaces";
+import  { Address,Customer,Payload } from "../interfaces/base.interfaces";
+import { validatePhone } from "../validation/auth.validator";
 
 export async function signUp(req:Request,res:Response,next:NextFunction):Promise<void> {
     
-    try {
         const {password,phone}=req.body;
-        
-       if(validatePhonePassword(password,phone)){
 
-            await signUpHandler(phone,password);
-            const token:string=await genToken(phone);
+    try {
+        
+            validatePhone(phone);
+
+            const id:string=await signUpHandler(phone,password);
+            const token:string=await genToken({phone,id});
         
             res
             .cookie('token', token, { httpOnly: true })
             .status(201)
             .json({ message: "Successfully signed up." });
           
-       } 
 
     } catch (error) {
 
@@ -31,20 +31,20 @@ export async function signUp(req:Request,res:Response,next:NextFunction):Promise
 
 export async function logIn(req:Request,res:Response,next:NextFunction):Promise<void> {
     
-    try {
         const {password,phone}=req.body;
         
-       if(validatePhonePassword(password,phone)){
+    try {
 
-            await logInHandler(phone,password);
-            const token:string=await genToken(phone);
+           validatePhone(phone);
+       
+           const id:string=await logInHandler(phone,password);
+            const token:string=await genToken({phone,id});
         
             res
             .cookie('token', token, { httpOnly: true })
             .status(201)
-            .json({ message: "Successfully signed up." });
+            .json({ message: "Successfully loged in." });
           
-       } 
 
     } catch (error) {
 
@@ -75,5 +75,7 @@ export async function addProfile(req:Request,res:Response,next:NextFunction):Pro
         next(error);
     }
 
-
 }
+
+
+

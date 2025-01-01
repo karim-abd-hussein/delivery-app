@@ -1,8 +1,8 @@
-import mongoose,{Mongoose,Schema} from "mongoose";
-
+import mongoose,{Document, Mongoose,Schema} from "mongoose";
+import { Customer } from "../interfaces/base.interfaces";
 
 // Define the schema
-const customerSchema:Schema = new mongoose.Schema({
+const customerSchema:Schema = new mongoose.Schema<Customer>({
     phone: {
         type: String,
         required: true,
@@ -18,7 +18,7 @@ const customerSchema:Schema = new mongoose.Schema({
     lastName: {
         type: String,
     },
-    image: {
+    imageURL: {
         type: String,
     },
     address:{
@@ -40,8 +40,4 @@ const customerSchema:Schema = new mongoose.Schema({
     },
 });
 
-// Create a model from the schema
-const Customer = mongoose.model('Customer',customerSchema);
-
-// Export the model
-export default Customer;
+export default mongoose.model<Customer & Document>('CustomerModel',customerSchema);

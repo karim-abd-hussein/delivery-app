@@ -19,18 +19,14 @@ const orderSchema:Schema=new mongoose.Schema<Order>({
             type:String,
             require:true
         },
-        nextTo:{
-
-            type:String,
-        }
-
     },
      products: [
       {
-        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true }, // References a Product
-        quantity: { type: Number, required: true }, // Quantity of the product
+        productId: { type:String, required: true },
+        quantity: { type: Number, required: true }, 
       },
     ],
+    store:{type:String,require:true},
     totalPrice: { type: Number, required: true },
     status: {
       type: String,

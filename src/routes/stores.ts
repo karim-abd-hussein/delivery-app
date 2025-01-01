@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteStore, getStoresByName, insertStore, updateStore } from "../controllers/stores";
+import { deleteStore, getStoreByPhone, getStores, getStoresById, getStoresByName, insertStore, logInStore, updateStore } from "../controllers/stores";
 const router=express.Router();
 
 
@@ -53,14 +53,21 @@ const router=express.Router();
  *         description: Invalid request body
  */
 
+
+
+router.post('/log-in',logInStore);
+
+router.delete('/delete/:id',deleteStore);
+
 router.post('/insert',insertStore);
-
-
-router.delete('/delete/:id',deleteStore)
-
 
 router.put('/update/:id',updateStore);
 
+router.get('/get-by-id/:id',getStoresById);
+
+router.get('/get-by-phone/:phone',getStoreByPhone);
+
+router.get('/get-stores',getStores);
 
 router.get('/get-by-name/:name',getStoresByName);
 

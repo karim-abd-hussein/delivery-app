@@ -1,29 +1,52 @@
-import ApiError from "../utils/apiError";
+import mongoose, { Document, Model }  from "mongoose";
+import ApiError from "../utils/ApiError";
 import httpErrorResponse from "../utils/httpErrorResponse";
 
-export  function validatePhonePassword(phone:string,password:string):boolean {
- 
+
+
+  export  function validatePhone(phone:string):void {
+    
     try {
         
-        if(!phone||!password||phone.length!==10){
+        if(!phone)
+            throw new ApiError(httpErrorResponse.badRequest.message,httpErrorResponse.badRequest.status);
+
+
+        const phoneRegex = /^09[0-9]{8}$/;
+
+            const match:boolean=phoneRegex.test(phone);
+        if(!match)
 
             throw new ApiError(httpErrorResponse.badRequest.message,httpErrorResponse.badRequest.status);
-        }
 
-        if(!validatePhoneNumber(phone))
+    } catch (error) {
+    
+        throw error;
+    }
 
-            throw new ApiError('please check correct phone number',httpErrorResponse.badRequest.status);
+}
 
-            return true;
+export  async function validateId<T extends Document>(id:string,model:Model<T>):Promise<T> {
+ 
+    
+    try {
+
+        if(!mongoose.Types.ObjectId.isValid(id))
+            throw new ApiError(httpErrorResponse.badRequest.message,httpErrorResponse.badRequest.status);
+        
+            
+            const exist:T|null=await model.findById(id);
+        
+            if(!exist)
+        
+                throw new ApiError(httpErrorResponse.notFound.message,httpErrorResponse.notFound.status);
+
+                return exist;
 
     } catch (error) {
         
         throw error;
     }
 
-}
 
-const validatePhoneNumber = (phone: string): boolean => {
-    const phoneRegex = /^09[0-9]{8}$/;
-    return phoneRegex.test(phone);
-  };
+}

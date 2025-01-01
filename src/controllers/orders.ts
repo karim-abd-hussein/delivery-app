@@ -5,33 +5,30 @@ import { verfiyToken } from "../utils/token";
 import { 
     canselPendingdOrderById, 
     changeOrderStatus,
-    deleteCompletedOrderById,
      getOrdersByPhone, 
      insertProducts 
     } 
 from "../services/orders.db";
 
 import orderModel from "../models/order.model";
-import { save } from "../services/generic.db";
 
 export async function createOrder(req:Request,res:Response,next:NextFunction) {
     
+
+    const address:Address=req.body.address;
+    const products:ProductItem[]=req.body.products;
+    const token:string=req.cookies.token;
+    const store:string=req.body.store
+
 try {
-    
-     const token:string=req.cookies.token;
     
      const payload:Payload=await verfiyToken(token);
 
      const phone:string=payload.phone;
-     const address:Address=req.body.address;
-     const products:ProductItem[]=req.body.products;
-
+ 
       const totalPrice:number=await insertProducts(products);
 
-     const newOrder:Order=  new orderModel({phone,address,products,totalPrice});
-
-         
-        await save(newOrder,orderModel);
+     await new orderModel({phone,address,products,store,totalPrice}).save();
 
      res
      .status(201)
@@ -46,39 +43,18 @@ try {
 }
 
 
-export async function deleteOrder(req:Request,res:Response,next:NextFunction) {
-    
-    try {
-        
-         const token:string=req.cookies.token;
-        
-         const payload:Payload=await verfiyToken(token);
-    
-         const orderId:string=req.params.id;
-    
-        await deleteCompletedOrderById(orderId);
+ 
 
-         res
-         .status(201)
-         .json({message:"Succssfully order deleted"});
+ export async function canselOrder(req:Request,res:Response,next:NextFunction) {
     
-    
-    } catch (error) {
-        
-        next(error);
-    }    
-    
-    }
-
-    export async function canselOrder(req:Request,res:Response,next:NextFunction) {
-    
-        try {
             
              const token:string=req.cookies.token;
+             const orderId:string=req.params.id;
+
+        try {
             
              const payload:Payload=await verfiyToken(token);
         
-             const orderId:string=req.params.id;
         
             await canselPendingdOrderById(orderId);
     
@@ -95,35 +71,6 @@ export async function deleteOrder(req:Request,res:Response,next:NextFunction) {
         }
 
 
-    export async function updateOrder(req:Request,res:Response,next:NextFunction) {
-
-        try {
-            
-                const token:string=req.cookies.token;
-            
-                const payload:Payload=await verfiyToken(token);
-        
-                const orderId:string=req.params.id;
-                const phone:string=payload.phone;
-                const address:Address=req.body.address;
-                const products:ProductItem[]=req.body.products;
-        
-              await canselPendingdOrderById(orderId);
-
-            //    await create(phone,address,products);
-              
-                res
-                .status(201)
-                .json({message:"Succssfully order updated"});
-        
-        
-        } catch (error) {
-            
-            next(error);
-        }    
-        
-        }
-
     export async function getOrders(req:Request,res:Response,next:NextFunction) {
 
         try {
@@ -138,7 +85,7 @@ export async function deleteOrder(req:Request,res:Response,next:NextFunction) {
               
                 res
                 .status(201)
-                .json({orders});
+                .json(orders);
         
         
         } catch (error) {
@@ -148,6 +95,30 @@ export async function deleteOrder(req:Request,res:Response,next:NextFunction) {
         
         }
 
+
+        export async function getPendingStoreOrders(req:Request,res:Response,next:NextFunction) {
+
+            try {
+                
+                    const token:string=req.cookies.token;
+                
+                    const payload:Payload=await verfiyToken(token);
+
+                    const status:string='Pending';
+
+                    const orders:Order[]= await orderModel.find({status,store:payload.id});
+                  
+                    res
+                    .status(201)
+                    .json(orders);
+            
+            
+            } catch (error) {
+                
+                next(error);
+            }    
+            
+            }
 
 export async function changeStatus(req:Request,res:Response,next:NextFunction) {
     

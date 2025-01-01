@@ -1,5 +1,5 @@
 import { Express } from "express";
-import createServer from "./utils/server";
+import createServer from "./config/server";
 import dotenv from 'dotenv'
 import mongoose from "mongoose";
 dotenv.config();

@@ -1,98 +1,55 @@
-import mongoose, { Document } from "mongoose";
-import { Address, Order, Product, ProductItem } from "../interfaces/base.interfaces";
+import {ProductItem } from "../interfaces/base.interfaces";
 import OrderModel from "../models/order.model"
-import ApiError from "../utils/apiError";
+import ApiError from "../utils/ApiError";
 import httpErrorResponse from "../utils/httpErrorResponse";
 import productModel from "../models/product.model";
-
-export async function insertProducts(products:ProductItem[]):Promise<number> {
-    
-    try {
-        
-         let totalPrice:number = 0;
-
-           products.forEach(async (product) => {
-           // Check if productId is valid
-           if (!mongoose.Types.ObjectId.isValid(product.productId)) {
-             throw new ApiError(`Invalid productId: ${product.productId}`, httpErrorResponse.conflict.status);
-           }
-
-           const updatedProduct:Product|null = await productModel.findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(product.productId) }, // Filter
-            { $set: { quantity: -product.quantity } },                              // Update operation
-            { new: true, upsert: false }                                     // Options: return new document, no upsert
-          );
-         
-           if (!updatedProduct) {
-             throw new ApiError(`Product not found: ${product.productId}`, httpErrorResponse.notFound.status);
-           }
-         
-           
-          //  if(productDetails.quantity<product.quantity)
-          //     throw new ApiError('The quantity more then avalible',httpErrorResponse.conflict.status);
+import { validateId } from "../validation/auth.validator";
 
 
-
-           const productTotalPrice:number = product.quantity * updatedProduct.price;
-            totalPrice+= productTotalPrice;
-         });
-
-         return totalPrice;
-         
-    } catch (error) {
-        
-      throw error;
-    }
-}
-
-
-
-export async function deleteCompletedOrderById(id:string):Promise<void> {
-    
+export async function insertProducts(products: ProductItem[]): Promise<number> {
   try {
+    let totalPrice: number = 0;
+
+    for (const product of products) {
+     
+      const findProduct = await validateId(product.productId,productModel);
       
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new ApiError(`Invalid productId: ${id}`, httpErrorResponse.conflict.status);
+    
+      if (findProduct.quantity < product.quantity) {
+        throw new ApiError(
+          `Insufficient quantity for ${findProduct.name}. Available: ${findProduct.quantity}.`,
+          httpErrorResponse.conflict.status
+        );
+      }
+
+      await productModel.findByIdAndUpdate(product.productId, {
+        quantity: findProduct.quantity - product.quantity,
+      });
+
+      const productTotalPrice: number = product.quantity * findProduct.price;
+      totalPrice += productTotalPrice;
     }
 
-
-
-      const order:Order|null= await OrderModel.findById(new mongoose.Types.ObjectId(id));
-
-      if(!order)
-        throw new ApiError(httpErrorResponse.notFound.message,httpErrorResponse.notFound.status);
-
-      if(order.status!=='Completed')
-
-        throw new ApiError(httpErrorResponse.conflict.message,httpErrorResponse.conflict.status);
-
-      await OrderModel.deleteOne({_id:new mongoose.Types.ObjectId(id)});
-       
+    return totalPrice;
   } catch (error) {
-      
     throw error;
   }
 }
 
-
-export async function canselPendingdOrderById(id:string):Promise<void> {
+export async function canselPendingdOrderById(_id:string):Promise<void> {
     
   try {
-      
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new ApiError(httpErrorResponse.conflict.message, httpErrorResponse.conflict.status);
-    }
 
+      const order = await validateId(_id,OrderModel);
 
+  
+        if(order.status!=='Pending')
 
-      const order:Order|null= await OrderModel.findById(new mongoose.Types.ObjectId(id));
-
-      if(!order)
-        throw new ApiError(httpErrorResponse.notFound.message,httpErrorResponse.notFound.status);
+          throw new ApiError(`You can't cansel accepted order`,httpErrorResponse.conflict.status);
 
          await returnQuantityToProducts(order.products);
 
-      await OrderModel.deleteOne({_id:new mongoose.Types.ObjectId(id)});
+      await OrderModel.findByIdAndDelete(_id);
        
   } catch (error) {
       
@@ -101,20 +58,25 @@ export async function canselPendingdOrderById(id:string):Promise<void> {
   }
 }
 
-async function returnQuantityToProducts(products:ProductItem[]) {
+async function returnQuantityToProducts(products:ProductItem[]):Promise<void> {
   
-  products.forEach(async (product)=>{
+  for (const product of products) {
+    
+    const findProduct = await productModel.findById(product.productId);
+    if (!findProduct) {
+      throw new ApiError(
+        httpErrorResponse.notFound.message,
+        httpErrorResponse.notFound.status
+      );
+    }
 
-  await productModel.updateOne(
-    { _id: new mongoose.Types.ObjectId(product.productId) }, // Filter
-    { $set: { quantity: +product.quantity } },   // Update operation                                  // Options: return new document, no upsert
-  );
-
-});
-
+    await productModel.findByIdAndUpdate(product.productId, {
+      quantity: findProduct.quantity + product.quantity,
+    });
 
 }
 
+}
 export async function getOrdersByPhone(phone: string): Promise<any[]> {
   
   try {
@@ -129,7 +91,7 @@ export async function changeOrderStatus(id:string,status: string):Promise<void>{
   
   try {
 
-     await OrderModel.updateOne({_id:new mongoose.Types.ObjectId(id)},{status});
+     await OrderModel.updateOne({_id:id},{status});
     
 
   } catch (error) {

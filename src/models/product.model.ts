@@ -7,6 +7,7 @@ const productSchema:Schema = new mongoose.Schema<Product>(
     price: { type: Number, required: true },
     description: { type: String },
     category: { type: String },
+    quantity:{type:Number,required:true},
     store: { type: mongoose.Schema.Types.ObjectId, ref: 'Store' }, // Belongs to a Store
   },
   { timestamps: true }

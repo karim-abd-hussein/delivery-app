@@ -5,7 +5,8 @@ import productRouter from '../routes/products';
 import storeRouter from '../routes/stores';
 import handleApiError from '../middlewares/errorHandling.middleware';
 import swaggerUi from 'swagger-ui-express';
-import swaggerDocs from '../config/swaggerConfig';
+import cookieParser from 'cookie-parser';
+import swaggerDocs from './swaggerConfig';
 
 
 export default function createServer():Express{
@@ -13,6 +14,7 @@ export default function createServer():Express{
     const app =express();
 
     app.use(express.json());
+    app.use(cookieParser());
 
     // Serve Swagger documentation
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));

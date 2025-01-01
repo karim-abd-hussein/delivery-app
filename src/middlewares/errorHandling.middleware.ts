@@ -1,5 +1,5 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import ApiError from "../utils/apiError";
+import ApiError from "../utils/ApiError";
 import httpErrorResponse from "../utils/httpErrorResponse";
 
 export default function handleApiError(error:ApiError,req:Request,res:Response,next:NextFunction):void{
