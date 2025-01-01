@@ -3,11 +3,11 @@ import authRouter from '../routes/auth';
 import orderRouter from '../routes/orders';
 import productRouter from '../routes/products';
 import storeRouter from '../routes/stores';
-import handleApiError from '../middlewares/errorHandling.middleware';
+import handleApiError from '../middlewares/errorHandling';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import swaggerDocs from './swaggerConfig';
-import cors from './cors';
+import cors from '../middlewares/cors';
 
 
 export default function createServer():Express{
