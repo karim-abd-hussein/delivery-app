@@ -11,6 +11,7 @@ import {
 from "../services/orders.db";
 
 import orderModel from "../models/order.model";
+import { notify } from "../config/socket";
 
 export async function createOrder(req:Request,res:Response,next:NextFunction) {
     
@@ -18,17 +19,20 @@ export async function createOrder(req:Request,res:Response,next:NextFunction) {
     const address:Address=req.body.address;
     const products:ProductItem[]=req.body.products;
     const token:string=req.cookies.token;
-    const store:string=req.body.store
+    const storeId:string=req.body.storeId
 
 try {
     
      const payload:Payload=await verfiyToken(token);
 
-     const phone:string=payload.phone;
+     const customerId=payload.id;
+     const phone=payload.phone;
  
-      const totalPrice:number=await insertProducts(products);
+    const totalPrice:number=await insertProducts(products);
 
-     await new orderModel({phone,address,products,store,totalPrice}).save();
+     await new orderModel({phone,customerId,address,products,storeId,totalPrice}).save();
+
+     notify({id:storeId,message:"new order pending."});
 
      res
      .status(201)
@@ -122,18 +126,19 @@ try {
 
 export async function changeStatus(req:Request,res:Response,next:NextFunction) {
     
+
+    const id:string=req.params.id;
+    const status:string=req.params.status;
+    const token:string=req.cookies.token;
+
+
 try {
 
-    const token:string=req.cookies.token;
             
     const payload:Payload=await verfiyToken(token);
 
-    const phone:string=payload.phone;
-    const id:string=req.params.id;
-    const status:string=req.params.status;
-
     await changeOrderStatus(id,status);
-    
+
     res
     .status(201)
     .json({message:"Succssfully order status updated"});

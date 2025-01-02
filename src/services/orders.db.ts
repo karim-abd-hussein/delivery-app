@@ -1,9 +1,10 @@
-import {ProductItem } from "../interfaces/base.interfaces";
+import {Order, ProductItem } from "../interfaces/base.interfaces";
 import OrderModel from "../models/order.model"
 import ApiError from "../utils/ApiError";
 import httpErrorResponse from "../utils/httpErrorResponse";
 import productModel from "../models/product.model";
 import { validateId } from "../validation/auth.validator";
+import { notify } from "../config/socket";
 
 
 export async function insertProducts(products: ProductItem[]): Promise<number> {
@@ -87,12 +88,21 @@ export async function getOrdersByPhone(phone: string): Promise<any[]> {
   }
 }
 
-export async function changeOrderStatus(id:string,status: string):Promise<void>{
+export async function changeOrderStatus(orderId:string,status: string):Promise<void>{
   
+
   try {
 
-     await OrderModel.updateOne({_id:id},{status});
+    const updatedOrder = await OrderModel.findOneAndUpdate(
+      { _id: orderId },  // Filter to find the document
+      { status },   // The update operation
+      { new: true } // Options: return the updated document
+    );
+
+    if(!updatedOrder)
+      throw new ApiError(httpErrorResponse.notFound.message,httpErrorResponse.notFound.status);
     
+    notify({id:updatedOrder.customerId,message:`The order of date ${updatedOrder.createdAt} is ${status}`});
 
   } catch (error) {
 

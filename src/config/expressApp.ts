@@ -10,7 +10,7 @@ import swaggerDocs from './swaggerConfig';
 import cors from '../middlewares/cors';
 
 
-export default function createServer():Express{
+export default function expressApp():Express{
 
     const app =express();
 

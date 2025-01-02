@@ -20,34 +20,6 @@ The **Delivery-Application** backend is the server-side implementation for a del
 - **JWT (JSON Web Tokens)**: For secure user authentication.
 - **Swagger**: API documentation and testing.
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/karim-abd-hussein/delivery-app
-   cd delivery-app
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Set up the environment:
-   - Create an `.env` file in the root directory and configure the following variables:
-     ```env
-    PORT=5000
-   SECRET_KEY=
-    MONGO_URI=
-
-     ```
-
-4. Start the development server:
-   ```bash
-   tsc
-
-   npm start
-   ```
-
 ## Endpoints
 
 ### Stores 

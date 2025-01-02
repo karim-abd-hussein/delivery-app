@@ -3,9 +3,9 @@ import { canselOrder, changeStatus, createOrder, getOrders, getPendingStoreOrder
 const router=express.Router();
 
 //Customer
-router.post('/create',createOrder);
+router.post('/insert',createOrder);
 
-router.delete('/cansel/:id',canselOrder);
+router.delete('/delete/:id',canselOrder);
 
 router.get('/orders',getOrders);
 

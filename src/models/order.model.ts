@@ -2,8 +2,11 @@ import mongoose, { Document, Schema } from "mongoose";
 import {Order} from '../interfaces/base.interfaces'
 const orderSchema:Schema=new mongoose.Schema<Order>({
 
-    phone:{
-
+  phone:{
+    type:String,
+    require:true,
+   },
+    customerId:{
         type:String,
         require:true,
     },
@@ -26,7 +29,7 @@ const orderSchema:Schema=new mongoose.Schema<Order>({
         quantity: { type: Number, required: true }, 
       },
     ],
-    store:{type:String,require:true},
+    storeId:{type:String,require:true},
     totalPrice: { type: Number, required: true },
     status: {
       type: String,

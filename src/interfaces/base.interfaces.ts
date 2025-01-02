@@ -24,9 +24,10 @@ export interface ProductItem{
  export interface Order extends Document {
  
    phone:string;
+   customerId:string;
    address:Address;
    products:ProductItem[];
-   store:string;
+   storeId:string;
    totalPrice:number;  
    status:string; 
    createdAt:Date;
@@ -60,3 +61,10 @@ export interface Customer extends Document{
   address?:Address,
   createdAt?: Date
 }
+
+export interface Notification {
+
+   id:string;
+   message:string;
+   
+};

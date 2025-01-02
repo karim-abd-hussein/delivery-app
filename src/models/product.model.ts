@@ -13,4 +13,4 @@ const productSchema:Schema = new mongoose.Schema<Product>(
   { timestamps: true }
 );
 
-export default mongoose.model<Product&Document>('ProductModel', productSchema);
+export default mongoose.model<Product & Document>('ProductModel', productSchema);
